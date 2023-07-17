@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-
-let API_HOST = import.meta.env.VITE_API_HOST
+import { API_HOST } from './components/Const';
 
 let pictureUrl = ref()
 let checked: boolean = false

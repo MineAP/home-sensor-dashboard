@@ -5,6 +5,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import App from './App.vue'
 import History from './History.vue'
 import Camera from './Camera.vue'
+import { API_HOST } from './components/Const';
 
 const routes = [
     { path: '/', component: App },
@@ -16,6 +17,8 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes, // short for `routes: routes`
 })
+
+console.log("API_HOST", API_HOST)
 
 const app = createApp({})
 app.use(router)

@@ -4,9 +4,8 @@ import CpuIcon from './icons/IconCPU.vue'
 import TempIcon from './icons/IconTemp.vue'
 import CameraIcon from './icons/IconCamera.vue'
 import axios from 'axios';
+import { API_HOST } from './Const';
 import { ref, onMounted } from 'vue';
-
-let API_HOST = import.meta.env.VITE_API_HOST
 
 const cpu_clock = ref()
 cpu_clock.value = "-"

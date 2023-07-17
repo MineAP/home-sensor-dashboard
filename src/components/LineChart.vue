@@ -4,8 +4,7 @@ import { ref, onMounted } from 'vue';
 import { type Ref } from 'vue';
 import axios from 'axios';
 import moment from 'moment';
-
-let API_HOST = import.meta.env.VITE_API_HOST
+import { API_HOST } from './Const';
 
 const canvas1Ref = ref()
 const canvas2Ref = ref()
