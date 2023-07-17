@@ -2,6 +2,8 @@
 
 Vue.js (3.3) + TypeScriptのSingle Page Application（SPA） 
 
+![preview](./preview.jpeg)
+
 ## 動作環境
 
 - Nodejs: 18.16.17
