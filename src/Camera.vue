@@ -43,6 +43,7 @@ function updatePicture() {
             }
         })
         .catch(error => {
+            autoUpdateChecked = false
             alert(error)
         });        
 }
@@ -51,10 +52,12 @@ function execPostureEstimation(base64img:string) {
 
     axios.post(API_HOST + '/movenet/inference/', {image: base64img})
         .then(response => {
-            pictureUrl.value = 'data:image/png;base64,' + btoa(response.data);
+            pictureUrl.value = 'data:image/png;base64,' + response.data.image;
         })
         .catch(error => {
+            movenetEnableChecked = false
             pictureUrl.value = 'data:image/png;base64,' + base64img;
+            alert(error)
         })
 }
 
