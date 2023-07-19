@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import Chart from 'chart.js/auto';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { type Ref } from 'vue';
 import axios from 'axios';
 import moment from 'moment';
 import { API_HOST } from './Const';
 
+const count = ref()
+
+const tempHistoryCount = localStorage.getItem("tempHistoryCount")
+count.value = Number(tempHistoryCount) | 100
 const canvas1Ref = ref()
 const canvas2Ref = ref()
 
@@ -14,9 +18,25 @@ let chart2:Chart | undefined
 
 onMounted(() => {
     updateCharts()
+    window.addEventListener('resize', onResize)
 })
 
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', onResize)
+})
+
+function onResize() {
+    if (chart1) {
+        chart1.update();
+    }
+    if (chart2) {
+        chart2.update();
+    }
+}
+
 function updateCharts() {
+
+    localStorage.setItem("tempHistoryCount", count.value)
 
     collectData().then((response) => {
 
@@ -62,7 +82,9 @@ function createCharts (chart:Chart | undefined, canvasRef:Ref, title:string, col
 
 async function collectData() : Promise<ApiResult> {
 
-    const { data } = await axios.get(API_HOST + '/sensorlogs')
+    const tmpCount:number = Number(count.value) || 100 
+
+    const { data } = await axios.get(API_HOST + `/sensorlogs?count=${tmpCount}`)
 
     let labels:string[] = []
     let data1:number[] = []
@@ -95,8 +117,19 @@ interface ApiResult {
 
 <template>
     <div>
+        <input v-model="count" placeholder="" type="number" min="100" max="10000" step="100">
         <button @click="updateCharts()">更新</button>
-        <canvas ref="canvas1Ref" style="width: 800px; height: 400px;" />
-        <canvas ref="canvas2Ref" style="width: 800px; height: 400px;" />
+        <canvas ref="canvas1Ref"  />
+        <canvas ref="canvas2Ref"  />
     </div>
 </template>
+
+<style module>
+
+canvas {
+    width: 90vw;
+    min-width: 800px;
+    max-height: 400px;
+}
+
+</style>
