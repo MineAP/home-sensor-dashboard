@@ -13,6 +13,9 @@ count.value = Number(tempHistoryCount) | 100
 const canvas1Ref = ref()
 const canvas2Ref = ref()
 
+const lastUpdateDate = ref()
+lastUpdateDate.value = "-"
+
 let chart1:Chart | undefined
 let chart2:Chart | undefined
 
@@ -91,11 +94,16 @@ async function collectData() : Promise<ApiResult> {
     let data2:number[] = []
 
     if (data instanceof Array) {
-        data.reverse().forEach(element => {
+        const list = data.reverse()
+        list.forEach(element => {
             data1.push(Number(element["temperature"]))
             data2.push(Number(element["humidity"]))
             labels.push(moment(element["timestamp"]).format("M/D H:mm:ss"))
         });
+        if (list.length > 0) {
+            const last = list[list.length-1]
+            lastUpdateDate.value = moment(last["timestamp"]).format("M/D H:mm:ss")
+        }
     }
 
     const result:ApiResult = {
@@ -119,8 +127,9 @@ interface ApiResult {
     <div>
         <input v-model="count" placeholder="" type="number" min="100" max="10000" step="100">
         <button @click="updateCharts()">更新</button>
-        <canvas ref="canvas1Ref"  />
-        <canvas ref="canvas2Ref"  />
+        <div>温度・湿度の最終更新日時：{{ lastUpdateDate }}</div>
+        <canvas ref="canvas1Ref" />
+        <canvas ref="canvas2Ref" />
     </div>
 </template>
 
