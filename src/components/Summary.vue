@@ -17,20 +17,20 @@ const room_temp = ref()
 room_temp.value = "-"
 let pictureUrl = ref()
 
-let timer:NodeJS.Timer
+let timerId:number
 
 onMounted(() => {
   
-  timer = setInterval(updateAllData, 5000)
+  timerId = setInterval(updateAllData, 5000)
 
   updateAllData()
 
 })
 
 onBeforeUnmount(() => {
-  if (timer) {
+  if (timerId) {
     console.log("top update timer has stopped.")
-    clearInterval(timer)
+    clearInterval(timerId)
   }
 })
 
