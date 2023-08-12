@@ -5,7 +5,7 @@ import TempIcon from './icons/IconTemp.vue'
 import CameraIcon from './icons/IconCamera.vue'
 import axios from 'axios';
 import { API_HOST } from './Const';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 const cpu_clock = ref()
 cpu_clock.value = "-"
@@ -17,12 +17,21 @@ const room_temp = ref()
 room_temp.value = "-"
 let pictureUrl = ref()
 
+let timer:NodeJS.Timer
+
 onMounted(() => {
   
-  setInterval(updateAllData, 5000)
+  timer = setInterval(updateAllData, 5000)
 
   updateAllData()
 
+})
+
+onBeforeUnmount(() => {
+  if (timer) {
+    console.log("top update timer has stopped.")
+    clearInterval(timer)
+  }
 })
 
 function updateAllData() {

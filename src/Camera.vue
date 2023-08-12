@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 import { API_HOST } from './components/Const';
 
@@ -19,6 +19,13 @@ onMounted(() => {
     }
 
 });
+
+onBeforeUnmount(() => {
+    if (timerId) {
+        console.log("camera update timer has stopped.")
+        clearInterval(timerId)
+    }
+})
 
 function autoUpdateChanged(item:Event) {
     if (autoUpdateChecked) {
