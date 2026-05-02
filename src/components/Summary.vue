@@ -3,10 +3,9 @@ import SummaryItem from './SummaryItem.vue'
 import CpuIcon from './icons/IconCPU.vue'
 import TempIcon from './icons/IconTemp.vue'
 import CameraIcon from './icons/IconCamera.vue'
-import axios from 'axios';
-import { API_HOST } from './Const';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import moment from 'moment';
+import { requestJson } from '../utils/api';
 
 const cpu_clock = ref()
 cpu_clock.value = "-"
@@ -46,12 +45,12 @@ onBeforeUnmount(() => {
 })
 
 function updateAllData() {
-  axios.get(API_HOST + '/raspicpuinfo')
+  requestJson<ApiCpuInfo>('/raspicpuinfo')
       .then(response => {
-        cpu_clock.value = response.data["clock"];
-        cpu_temp.value = response.data["temp"];
-        cpu_update.value = response.data["timestamp"];
-        const timestampStr = response.data["timestamp"];
+        cpu_clock.value = response["clock"];
+        cpu_temp.value = response["temp"];
+        cpu_update.value = response["timestamp"];
+        const timestampStr = response["timestamp"];
         const timestamp = moment(timestampStr);
         if (timestampStr && timestamp.isValid()) {
           cpu_update.value = timestamp.fromNow()
@@ -66,11 +65,11 @@ function updateAllData() {
         }
       });
 
-  axios.get(API_HOST + '/sensorlogs/last')
+  requestJson<ApiSensorLog>('/sensorlogs/last')
       .then(response => {
-        room_temp.value = response.data["temperature"];
-        room_humid.value = response.data["humidity"];
-        const timestampStr = response.data["timestamp"];
+        room_temp.value = response["temperature"];
+        room_humid.value = response["humidity"];
+        const timestampStr = response["timestamp"];
         const timestamp = moment(timestampStr);
         if (timestampStr && timestamp.isValid()) {
           room_humid_update.value = timestamp.fromNow()
@@ -85,10 +84,22 @@ function updateAllData() {
         }
       });
 
-  axios.get(API_HOST + '/raspicameradata/')
+  requestJson<{ image: string }>('/raspicameradata/')
       .then(response => {
-        pictureUrl.value = 'data:image/png;base64,' + response.data.image;
+        pictureUrl.value = 'data:image/png;base64,' + response.image;
       });
+}
+
+interface ApiCpuInfo {
+  clock: string | number
+  temp: string | number
+  timestamp: string
+}
+
+interface ApiSensorLog {
+  temperature: string | number
+  humidity: string | number
+  timestamp: string
 }
 
 </script>

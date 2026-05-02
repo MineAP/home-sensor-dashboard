@@ -2,9 +2,8 @@
 import Chart from 'chart.js/auto';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { type Ref } from 'vue';
-import axios from 'axios';
 import moment from 'moment';
-import { API_HOST } from './Const';
+import { requestJson } from '../utils/api';
 
 const count = ref()
 
@@ -87,7 +86,7 @@ async function collectData() : Promise<ApiResult> {
 
     const tmpCount:number = Number(count.value) || 100 
 
-    const { data } = await axios.get(API_HOST + `/sensorlogs?count=${tmpCount}`)
+    const data = await requestJson<ApiLog[]>(`/sensorlogs?count=${tmpCount}`)
 
     let labels:string[] = []
     let data1:number[] = []
@@ -119,6 +118,12 @@ interface ApiResult {
     labels: string[]
     temp: number[]
     humid: number[]
+}
+
+interface ApiLog {
+    temperature: number | string
+    humidity: number | string
+    timestamp: string
 }
 
 </script>

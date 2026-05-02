@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import axios from 'axios';
-import { API_HOST } from './components/Const';
+import { requestJson } from './utils/api';
 
 let pictureUrl = ref()
 const tempAutoUpdate = localStorage.getItem("autoUpdateChecked")
@@ -41,12 +40,12 @@ function movenetEnableChanged(item:Event) {
 }
 
 function updatePicture() {
-    axios.get(API_HOST + '/raspicameradata')
+    requestJson<{ image: string }>('/raspicameradata')
         .then(response => {
             if (movenetEnableChecked) {
-                execPostureEstimation(response.data.image)
+                execPostureEstimation(response.image)
             } else {
-                pictureUrl.value = 'data:image/png;base64,' + response.data.image;
+                pictureUrl.value = 'data:image/png;base64,' + response.image;
             }
         })
         .catch(error => {
@@ -56,10 +55,12 @@ function updatePicture() {
 }
 
 function execPostureEstimation(base64img:string) {
-
-    axios.post(API_HOST + '/movenet/inference/', {image: base64img})
+    requestJson<{ image: string }>('/movenet/inference/', {
+        method: 'POST',
+        body: { image: base64img },
+    })
         .then(response => {
-            pictureUrl.value = 'data:image/png;base64,' + response.data.image;
+            pictureUrl.value = 'data:image/png;base64,' + response.image;
         })
         .catch(error => {
             movenetEnableChecked = false
