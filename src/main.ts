@@ -1,14 +1,15 @@
 import './assets/main.css'
 
-import { createApp } from 'vue/dist/vue.esm-bundler.js'
+import { createApp } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import App from './App.vue'
+import HomeView from './views/HomeView.vue'
 import History from './History.vue'
 import Camera from './Camera.vue'
 import { API_HOST } from './components/Const';
 
 const routes = [
-    { path: '/', component: App },
+    { path: '/', component: HomeView },
     { path: '/temphistory', component: History },
     { path: '/camera', component: Camera },
 ]
@@ -20,6 +21,4 @@ const router = createRouter({
 
 console.log("API_HOST", API_HOST)
 
-const app = createApp({})
-app.use(router)
-app.mount('#app')
+createApp(App).use(router).mount('#app')
