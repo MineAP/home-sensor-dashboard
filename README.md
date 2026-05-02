@@ -1,43 +1,58 @@
 # Sensor Info Dashboard
 
-Vue.js (3.3) + TypeScriptのSingle Page Application（SPA） 
+Raspberry Pi のセンサー情報を表示する Vue 3 の SPA です。
 
 ![preview](./preview.jpeg)
 
+## 概要
+
+- `Home` では CPU 情報、温度・湿度、カメラ画像の概要を表示します
+- `Temphistory` では温度・湿度の履歴を表示します
+- `Camera` では Raspberry Pi カメラ画像と姿勢推定の切り替えを行います
+
 ## 動作環境
 
-- Nodejs: 18.16.17
-- TypeScript: 5.0.6
-- vue: 3.3.4
-- vue-router: 4.2.4
+- Node.js 24 以上
+- pnpm 9 以上
+- Vue 3
+- Vue Router 4
+- TypeScript 5.9 系
 
 ## 前提
 
-通信先のWebAPIとして、以下のAPIサーバーが動作していること
+このアプリが参照する API サーバーを別途起動しておく必要があります。
+
 - https://github.com/MineAP/home-sensor-api
 
-## Project Setup
+## セットアップ
 
 ```sh
-npm install
+pnpm install
 ```
 
-### Config
+## 環境変数
 
-create `.env`, and write setting.
+プロジェクトルートに `.env` を作成し、API の接続先を設定します。
 
-```
+```env
 VITE_API_HOST=http://localhost:3000
 ```
 
-### Compile and Hot-Reload for Development
+## 開発
 
 ```sh
-npm run dev
+pnpm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## チェックとビルド
 
 ```sh
-npm run build
+pnpm run type-check
+pnpm run build
+```
+
+## プレビュー
+
+```sh
+pnpm run preview
 ```

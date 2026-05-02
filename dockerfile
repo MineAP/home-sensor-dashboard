@@ -1,13 +1,14 @@
 # ビルド環境
-FROM node:lts-alpine as build-stage
+FROM node:24-alpine AS build-stage
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+RUN corepack enable
+COPY package.json ./
+RUN pnpm install
 COPY . .
-RUN npm run build
+RUN pnpm run build
 
 # 本番環境
-FROM nginx:stable-alpine as production-stage
+FROM nginx:stable-alpine AS production-stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
