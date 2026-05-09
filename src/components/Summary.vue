@@ -7,6 +7,12 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import moment from 'moment';
 import { requestJson } from '../utils/api';
 
+type UpdateMockMode = 'normal' | 'stale' | 'invalid'
+type TimestampState = {
+  label: string
+  alert: boolean
+}
+
 const cpu_clock = ref()
 cpu_clock.value = "-"
 const cpu_temp = ref()
@@ -25,16 +31,15 @@ room_humid_update.value = "-"
 const room_humid_update_class_alert = ref(false)
 room_humid_update_class_alert.value = false
 
+const updateMockMode = getInitialMockMode()
+
 let pictureUrl = ref()
 
 let timerId:number
 
 onMounted(() => {
-  
   timerId = setInterval(updateAllData, 5000)
-
   updateAllData()
-
 })
 
 onBeforeUnmount(() => {
@@ -44,25 +49,58 @@ onBeforeUnmount(() => {
   }
 })
 
+function getInitialMockMode(): UpdateMockMode {
+  const queryMode = new URLSearchParams(window.location.search).get('summaryUpdateMockMode')
+  if (queryMode === 'normal' || queryMode === 'stale' || queryMode === 'invalid') {
+    return queryMode
+  }
+
+  const envMode = import.meta.env.VITE_SUMMARY_UPDATE_MOCK_MODE
+  if (envMode === 'normal' || envMode === 'stale' || envMode === 'invalid') {
+    return envMode
+  }
+
+  return 'normal'
+}
+
+function getTimestampState(timestampStr: string, timestamp: moment.Moment): TimestampState {
+  if (!timestampStr || !timestamp.isValid()) {
+    return {
+      label: '-',
+      alert: true
+    }
+  }
+
+  if (updateMockMode === 'invalid') {
+    return {
+      label: '-',
+      alert: true
+    }
+  }
+
+  if (updateMockMode === 'stale') {
+    return {
+      label: `${timestamp.clone().subtract(2, 'hours').fromNow()} (mock)`,
+      alert: true
+    }
+  }
+
+  return {
+    label: timestamp.fromNow(),
+    alert: timestamp.diff(moment.now(), 'minutes') < -30
+  }
+}
+
 function updateAllData() {
   requestJson<ApiCpuInfo>('/raspicpuinfo')
       .then(response => {
         cpu_clock.value = response["clock"];
         cpu_temp.value = response["temp"];
-        cpu_update.value = response["timestamp"];
         const timestampStr = response["timestamp"];
         const timestamp = moment(timestampStr);
-        if (timestampStr && timestamp.isValid()) {
-          cpu_update.value = timestamp.fromNow()
-          if (timestamp.diff(moment.now(), "minutes") < -30) {
-            cpu_update_date_class_alert.value = true
-          } else {
-            cpu_update_date_class_alert.value = false
-          }
-        } else {
-          cpu_update.value = "-"
-          cpu_update_date_class_alert.value = true
-        }
+        const state = getTimestampState(timestampStr, timestamp)
+        cpu_update.value = state.label
+        cpu_update_date_class_alert.value = state.alert
       });
 
   requestJson<ApiSensorLog>('/sensorlogs/last')
@@ -71,17 +109,9 @@ function updateAllData() {
         room_humid.value = response["humidity"];
         const timestampStr = response["timestamp"];
         const timestamp = moment(timestampStr);
-        if (timestampStr && timestamp.isValid()) {
-          room_humid_update.value = timestamp.fromNow()
-          if (timestamp.diff(moment.now(), "minutes") < -30) {
-            room_humid_update_class_alert.value = true
-          } else {
-            room_humid_update_class_alert.value = false
-          }
-        } else {
-          room_humid_update.value = "-"
-          room_humid_update_class_alert.value = true
-        }
+        const state = getTimestampState(timestampStr, timestamp)
+        room_humid_update.value = state.label
+        room_humid_update_class_alert.value = state.alert
       });
 
   requestJson<{ image: string }>('/raspicameradata/')
@@ -134,7 +164,7 @@ interface ApiSensorLog {
       <div class="update-date" :class="{ 'update-date-alert': room_humid_update_class_alert }">updated at {{ room_humid_update }}.</div>
     </div>
     <br />
-    温度・湿度の履歴は<router-link to="/temphistory">こちら</router-link>
+    <router-link class="history-link" to="/temphistory">履歴を見る →</router-link>
   </SummaryItem>
 
   <SummaryItem>
@@ -145,30 +175,124 @@ interface ApiSensorLog {
     最新のRaspberryPiカメラの画像
     <br />
     <router-link to="/camera">
-      <img v-bind:src="pictureUrl" ref="img" />
+      <div class="camera-preview-label">カメラ</div>
+      <div class="camera-preview">
+        <img v-bind:src="pictureUrl" ref="img" />
+      </div>
     </router-link>
   </SummaryItem>
 </template>
 
 <style scoped>
-
 .table-infos {
-  margin: 10px;
+  margin-top: 0.9rem;
 }
 
 img {
-  width: 200px;
-  min-width: 200px;
-  min-height: 150px;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-preview {
+  width: min(100%, 320px);
+  aspect-ratio: 4 / 3;
+  margin-top: 0.6rem;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.92), rgba(255, 255, 255, 0.95));
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+}
+
+.camera-preview-label {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.6rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .update-date {
-  font-size: small;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.45rem;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  color: rgba(71, 85, 105, 0.95);
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 999px;
 }
 
 .update-date-alert {
-  color: red;
-  background-color: yellow;
+  color: #92400e;
+  background: rgba(251, 191, 36, 0.16);
+  border-color: rgba(251, 191, 36, 0.28);
+}
+
+.table-infos table {
+  border-collapse: collapse;
+}
+
+.table-infos td {
+  padding: 0.22rem 0.35rem 0.22rem 0;
+}
+
+.table-infos td:first-child {
+  color: var(--color-text);
+  opacity: 0.8;
+}
+
+.table-infos td:last-child {
+  font-weight: 600;
+}
+
+.update-date-alert::before {
+  content: '';
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 0.4rem;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+a {
+  font-weight: 600;
+  color: inherit;
+}
+
+.history-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.25rem;
+  padding: 0.22rem 0.68rem;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.24);
+  background: rgba(16, 185, 129, 0.1);
+  color: #047857;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.history-link:hover {
+  text-decoration: none;
+  background: rgba(16, 185, 129, 0.16);
+  border-color: rgba(16, 185, 129, 0.32);
 }
 
 </style>
