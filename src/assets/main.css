@@ -17,13 +17,22 @@ body {
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: var(--color-accent);
   transition: 0.25s ease;
 }
 
 @media (hover: hover) {
   a:hover {
-    background-color: hsla(160, 100%, 37%, 0.14);
+    background-color: var(--color-accent-soft);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background:
+      radial-gradient(circle at top left, rgba(45, 212, 191, 0.08), transparent 34%),
+      radial-gradient(circle at top right, rgba(96, 165, 250, 0.08), transparent 30%),
+      var(--color-background);
   }
 }
 

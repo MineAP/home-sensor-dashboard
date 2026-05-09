@@ -24,6 +24,71 @@ type DayBoundaryChart = Chart & {
     showDayBoundaryLabels?: boolean
 }
 
+type ChartTheme = {
+    text: string
+    grid: string
+    boundary: string
+    boundaryLabelBg: string
+    boundaryLabelBorder: string
+    boundaryLabelText: string
+    temp: string
+    humid: string
+}
+
+function getCssVar(name: string, fallback: string) {
+    if (typeof window === 'undefined') return fallback
+    const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+    return value || fallback
+}
+
+function getChartTheme(): ChartTheme {
+    return {
+        text: getCssVar('--color-text', 'rgba(51, 65, 85, 0.92)'),
+        grid: getCssVar('--color-chart-grid', 'rgba(100, 116, 139, 0.18)'),
+        boundary: getCssVar('--color-chart-boundary', 'rgba(71, 85, 105, 0.36)'),
+        boundaryLabelBg: getCssVar('--color-chart-boundary-label-bg', 'rgba(15, 23, 42, 0.76)'),
+        boundaryLabelBorder: getCssVar('--color-chart-boundary-label-border', 'rgba(255, 255, 255, 0.18)'),
+        boundaryLabelText: getCssVar('--color-chart-boundary-label-text', '#ffffff'),
+        temp: getCssVar('--color-chart-temp', '#ef4444'),
+        humid: getCssVar('--color-chart-humid', '#3b82f6'),
+    }
+}
+
+function createChartOptions(theme: ChartTheme) {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        color: theme.text,
+        plugins: {
+            legend: {
+                labels: {
+                    color: theme.text
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    autoSkip: true,
+                    maxTicksLimit: 10,
+                    color: theme.text
+                },
+                grid: {
+                    color: theme.grid
+                }
+            },
+            y: {
+                ticks: {
+                    color: theme.text
+                },
+                grid: {
+                    color: theme.grid
+                }
+            }
+        }
+    }
+}
+
 const dayBoundaryPlugin = {
     id: 'dayBoundaryPlugin',
     afterDatasetsDraw(chart: Chart) {
@@ -31,6 +96,7 @@ const dayBoundaryPlugin = {
         const boundaryIndices = boundaryChart.dayBoundaryIndices ?? []
         const boundaryLabels = boundaryChart.dayBoundaryLabels ?? []
         const showDayBoundaryLabels = boundaryChart.showDayBoundaryLabels ?? false
+        const theme = getChartTheme()
 
         if (boundaryIndices.length === 0) return
 
@@ -38,7 +104,7 @@ const dayBoundaryPlugin = {
         const { ctx, chartArea } = chart
 
         ctx.save()
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.36)'
+        ctx.strokeStyle = theme.boundary
         ctx.lineWidth = 2
         ctx.setLineDash([6, 4])
 
@@ -66,12 +132,12 @@ const dayBoundaryPlugin = {
                 const boxX = x - boxWidth / 2
                 const boxY = textY
 
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.72)'
+                ctx.fillStyle = theme.boundaryLabelBg
                 ctx.fillRect(boxX, boxY, boxWidth, boxHeight)
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)'
+                ctx.strokeStyle = theme.boundaryLabelBorder
                 ctx.lineWidth = 1
                 ctx.strokeRect(boxX, boxY, boxWidth, boxHeight)
-                ctx.fillStyle = 'white'
+                ctx.fillStyle = theme.boundaryLabelText
                 ctx.fillText(label, x, boxY + paddingY)
             }
         })
@@ -103,9 +169,10 @@ function updateCharts() {
     localStorage.setItem("tempHistoryCount", String(count.value))
 
     collectData().then((response) => {
+        const theme = getChartTheme()
 
-        chart1 = createCharts(chart1, canvas1Ref, "温度(C)", "rgba(255,0,0,1)", response.labels, response.temp, response.dayBoundaryIndices, response.dayBoundaryLabels, true);
-        chart2 = createCharts(chart2, canvas2Ref, "湿度(%)", "rgba(0,0,255,1)", response.labels, response.humid, response.dayBoundaryIndices, response.dayBoundaryLabels, false);
+        chart1 = createCharts(chart1, canvas1Ref, "温度(C)", theme.temp, response.labels, response.temp, response.dayBoundaryIndices, response.dayBoundaryLabels, true);
+        chart2 = createCharts(chart2, canvas2Ref, "湿度(%)", theme.humid, response.labels, response.humid, response.dayBoundaryIndices, response.dayBoundaryLabels, false);
 
     });
 
@@ -125,6 +192,7 @@ function createCharts (
     if (canvasRef.value === null) return undefined;
     const canvas = canvasRef.value.getContext("2d");
     if (canvas === null) return undefined;
+    const theme = getChartTheme()
     
     if (chart) {
         chart.data.labels = labels
@@ -133,6 +201,7 @@ function createCharts (
             data: data,
             borderColor: color
         }]
+        chart.options = createChartOptions(theme)
         ;(chart as DayBoundaryChart).dayBoundaryIndices = dayBoundaryIndices
         ;(chart as DayBoundaryChart).dayBoundaryLabels = dayBoundaryLabels
         ;(chart as DayBoundaryChart).showDayBoundaryLabels = showDayBoundaryLabels
@@ -148,18 +217,7 @@ function createCharts (
                     borderColor: color
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        ticks: {
-                            autoSkip: true,
-                            maxTicksLimit: 10
-                        }
-                    }
-                }
-            },
+            options: createChartOptions(theme),
             plugins: [dayBoundaryPlugin]
         });
         ;(chart as DayBoundaryChart).dayBoundaryIndices = dayBoundaryIndices
@@ -272,10 +330,10 @@ interface ApiLog {
     align-items: center;
     gap: 0.35rem;
     padding: 0.3rem 0.52rem;
-    border: 1px solid rgba(148, 163, 184, 0.22);
+    border: 1px solid var(--color-surface-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.82);
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+    background: var(--color-surface);
+    box-shadow: 0 8px 18px var(--color-surface-shadow);
 }
 
 .chart-control input {
@@ -292,9 +350,9 @@ interface ApiLog {
     padding: 0.28rem 0.55rem;
     font-size: 0.85rem;
     line-height: 1.2;
-    color: rgba(71, 85, 105, 0.95);
-    background: rgba(148, 163, 184, 0.12);
-    border: 1px solid rgba(148, 163, 184, 0.16);
+    color: var(--color-text);
+    background: var(--color-muted-bg);
+    border: 1px solid var(--color-muted-border);
     border-radius: 999px;
 }
 

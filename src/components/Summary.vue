@@ -201,9 +201,9 @@ img {
   margin-top: 0.6rem;
   border-radius: 18px;
   overflow: hidden;
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  background: linear-gradient(180deg, rgba(248, 250, 252, 0.92), rgba(255, 255, 255, 0.95));
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--color-surface-border);
+  background: linear-gradient(180deg, var(--color-surface-strong), var(--color-surface));
+  box-shadow: 0 14px 28px var(--color-surface-shadow);
 }
 
 .camera-preview-label {
@@ -212,8 +212,8 @@ img {
   margin-top: 0.6rem;
   padding: 0.18rem 0.55rem;
   border-radius: 999px;
-  background: rgba(16, 185, 129, 0.12);
-  color: #047857;
+  background: var(--color-accent-soft-strong);
+  color: var(--color-accent);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -226,16 +226,16 @@ img {
   padding: 0.2rem 0.55rem;
   font-size: 0.85rem;
   line-height: 1.2;
-  color: rgba(71, 85, 105, 0.95);
-  background: rgba(148, 163, 184, 0.12);
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  color: var(--color-text);
+  background: rgba(148, 163, 184, 0.18);
+  border: 1px solid rgba(148, 163, 184, 0.24);
   border-radius: 999px;
 }
 
 .update-date-alert {
-  color: #92400e;
-  background: rgba(251, 191, 36, 0.16);
-  border-color: rgba(251, 191, 36, 0.28);
+  color: var(--color-warning);
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.3);
 }
 
 .table-infos table {
@@ -277,9 +277,9 @@ a {
   margin-top: 0.25rem;
   padding: 0.22rem 0.68rem;
   border-radius: 999px;
-  border: 1px solid rgba(16, 185, 129, 0.24);
-  background: rgba(16, 185, 129, 0.1);
-  color: #047857;
+  border: 1px solid var(--color-accent-border-strong);
+  background: var(--color-accent-soft-strong);
+  color: var(--color-accent);
   font-size: 0.9rem;
   font-weight: 700;
   text-decoration: none;
@@ -291,8 +291,8 @@ a:hover {
 
 .history-link:hover {
   text-decoration: none;
-  background: rgba(16, 185, 129, 0.16);
-  border-color: rgba(16, 185, 129, 0.32);
+  background: rgba(45, 212, 191, 0.24);
+  border-color: rgba(45, 212, 191, 0.42);
 }
 
 </style>

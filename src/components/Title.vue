@@ -30,7 +30,7 @@ h3 {
   font-size: 1rem;
   line-height: 1.5;
   color: var(--color-text);
-  opacity: 0.82;
+  opacity: 0.9;
 }
 
 .greetings h1,

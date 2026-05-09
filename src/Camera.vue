@@ -108,17 +108,17 @@ main {
 }
 
 .back-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: fit-content;
-    height: 34px;
-    padding: 0 0.58rem;
-    box-sizing: border-box;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.75);
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  height: 34px;
+  padding: 0 0.58rem;
+  box-sizing: border-box;
+  border-radius: 999px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-surface-border);
+    box-shadow: 0 6px 16px var(--color-surface-shadow);
     font-size: 0.88rem;
     line-height: 1;
 }
@@ -150,10 +150,10 @@ h2 {
     gap: 0.35rem;
     padding: 0.3rem 0.52rem;
     width: fit-content;
-    border: 1px solid rgba(148, 163, 184, 0.22);
+    border: 1px solid var(--color-surface-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.82);
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+    background: var(--color-surface);
+    box-shadow: 0 8px 18px var(--color-surface-shadow);
 }
 
 .camera-options label {
@@ -165,10 +165,10 @@ h2 {
     margin-top: 0.02rem;
     aspect-ratio: 4 / 3;
     overflow: hidden;
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    border: 1px solid var(--color-surface-border);
     border-radius: 22px;
-    background: rgba(248, 250, 252, 0.96);
-    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+    background: linear-gradient(180deg, var(--color-surface-strong), var(--color-surface));
+    box-shadow: 0 20px 45px var(--color-surface-shadow);
 }
 
 img {

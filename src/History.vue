@@ -24,19 +24,19 @@ import LineChart from './components/LineChart.vue'
 }
 
 .back-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: fit-content;
-    height: 34px;
-    padding: 0 0.58rem;
-    box-sizing: border-box;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.75);
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
-    font-size: 0.88rem;
-    line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  height: 34px;
+  padding: 0 0.58rem;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-surface-border);
+  box-shadow: 0 6px 16px var(--color-surface-shadow);
+  font-size: 0.88rem;
+  line-height: 1;
 }
 
 h2 {

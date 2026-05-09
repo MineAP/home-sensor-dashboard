@@ -20,12 +20,12 @@
   display: grid;
   gap: 0.75rem;
   padding: 1.1rem 1.15rem 1.15rem;
-  border: 1px solid rgba(148, 163, 184, 0.22);
+  border: 1px solid var(--color-surface-border);
   border-radius: 20px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(248, 250, 252, 0.92));
+    linear-gradient(180deg, var(--color-surface), var(--color-surface-strong));
   box-shadow:
-    0 18px 40px rgba(15, 23, 42, 0.06),
+    0 18px 40px var(--color-surface-shadow),
     0 2px 8px rgba(15, 23, 42, 0.04);
   backdrop-filter: blur(8px);
 }
@@ -73,10 +73,10 @@ h3 {
   i {
     width: 42px;
     height: 42px;
-    border: 1px solid rgba(148, 163, 184, 0.24);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.96));
+    border: 1px solid var(--color-surface-border);
+    background: linear-gradient(180deg, var(--color-surface-shimmer), var(--color-surface-strong));
     border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 8px 20px var(--color-surface-shadow);
   }
 
   .details {
