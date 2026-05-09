@@ -16,30 +16,23 @@ import Summary from '../components/Summary.vue'
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+header,
+main {
+  width: 100%;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+header {
+  margin-bottom: 1.75rem;
 }
 
 @media (min-width: 1024px) {
   header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
+    margin-bottom: 2.25rem;
   }
 
   header .wrapper {
     display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+    align-items: flex-start;
   }
 }
 </style>
